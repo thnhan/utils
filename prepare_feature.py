@@ -40,7 +40,7 @@ def load_negative(dset_name, dset_dir='data', feat_dir='extracted_feature'):
     return neg_feat
 
 
-def load_feature(dset_name, dset_dir='data', feat_dir='extracted_feature', only_posivite=0):
+def load_feature_lable(dset_name, dset_dir='data', feat_dir='extracted_feature', only_posivite=0):
     """
         dset_name: vd: Yeast, Human,
     Returns:
@@ -49,14 +49,14 @@ def load_feature(dset_name, dset_dir='data', feat_dir='extracted_feature', only_
     # feat = np.concatenate([load_positive(dset_name, dset_dir, feat_dir),
     #                        load_negative(dset_name, dset_dir, feat_dir)], axis=0)
     if only_posivite == 0:
-        feat = np.concatenate([load_positive(dset_name, dset_dir, feat_dir),
-                               load_negative(dset_name, dset_dir, feat_dir)], axis=0)
-        # true_label = np.concatenate([np.ones(load_positive(dset_name, dset_dir, feat_dir).shape[0]),
-        #                              np.zeros(load_negative(dset_name, dset_dir, feat_dir).shape[0])], axis=0)
+        feat_pos = load_positive(dset_name, dset_dir, feat_dir)
+        feat_neg = load_negative(dset_name, dset_dir, feat_dir)
+        feat = np.concatenate([feat_pos, feat_neg], axis=0)
+        true_label = np.concatenate([np.ones(feat_pos.shape[0]), np.zeros(feat_neg.shape[0])], axis=0)
     else:
         feat = load_positive(dset_name, dset_dir, feat_dir)
-        # true_label = np.ones(feat.shape[0])
-    return feat  #, true_label
+        true_label = np.ones(feat.shape[0])
+    return feat, true_label
 
 
 # def prepare_ONLY_POS_features(dset_name):
@@ -80,6 +80,6 @@ def load_feature(dset_name, dset_dir='data', feat_dir='extracted_feature', only_
 
 
 if __name__ == "__main__":
-    X = load_feature('Yeast', feat_dir='../LAM_LAI_DSET_YEAST')
+    X = load_feature_lable('Yeast', feat_dir='../LAM_LAI_DSET_YEAST')
     print(X)
     print(X.shape)
