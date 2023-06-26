@@ -62,10 +62,15 @@ def calculate_scores(true_y, prob_y, pred_y):
     scores.update({'NPV': npv})
     scores.update({'PPV': precision})
     # scores.update({'AUC': roc_auc_score(test_y, prob_y[:, 1])})
-    fpr, tpr, _ = roc_curve(true_y, prob_y[:, 1])
-    scores.update({'AUC': roc_auc_score(true_y, prob_y[:, 1])})
-    scores.update({'AUPR': average_precision_score(true_y, prob_y[:, 1])})
-
+    # fpr, tpr, _ = roc_curve(true_y, prob_y[:, 1])
+    try:
+        scores.update({'AUC': roc_auc_score(true_y, prob_y[:, 1])})
+    except:
+        scores.update({'AUC': roc_auc_score(true_y, np.squeeze(prob_y))})
+    try:
+        scores.update({'AUPR': average_precision_score(true_y, prob_y[:, 1])})
+    except:
+        scores.update({'AUPR': average_precision_score(true_y, np.squeeze(prob_y))})
     # scores['fpr'] = fpr
     # scores['fnr'] = fnr
     # scores['f1'] = f1
@@ -101,42 +106,6 @@ def print_metrics(true_y, prob_y=None, pred_y=None, metrics=None, verbose=1):
     return scores
 
 
-def plot_confusion_matrix(cm, classes,
-                          normalize=False,
-                          title='Confusion matrix',
-                          cmap=plt.cm.Blues, show=False):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    """
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
-    else:
-        print('Confusion matrix, without normalization')
-
-    print(cm)
-
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
-
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt),
-                 horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
-
-    plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    if show:
-        plt.show()
-
 
 def plot_metrics(model, test_X, test_y):
     plot_confusion_matrix(model, test_X, test_y,
@@ -166,9 +135,10 @@ def my_cv_report(cv_scores, metrics: list = None, verbose=1):
     tam = [list(map(lambda k: scores[k], metrics)) for scores in cv_scores]
     avg = mean(tam, axis=0).tolist()
     std = std(tam, axis=0).tolist()
-    txt = '|{:15}' * len(metrics) + '|' + '\n'
-    txt = txt + '|---------------' * len(metrics) + '|' + '\n'
-    txt = txt + '|{:8.2%}+/-{:0.2%}' + '|{:8.2%}+/-{:0.2%}' * (len(metrics) - 1) + '|'  # + '\n'
+    txt = '|{:13}' * len(metrics) + '|' + '\n'
+    txt = txt + '|-------------' * len(metrics) + '|' + '\n'
+    # txt = txt + '|{:7.2%}+/-{:0.2%}' + '|{:7.2%}+/-{:0.2%}' * (len(metrics) - 1) + '|'  # + '\n'
+    txt = txt + '|{:7.2%}±{:0.2%}' + '|{:7.2%}±{:0.2%}' * (len(metrics) - 1) + '|'  # + '\n'
     # txt = txt + '|+/-{:12.2%}' + '|{:12.2%}' * (len(metrics) - 1) + '|' + '\n'
     temp = []
     for a, b in zip(avg, std):

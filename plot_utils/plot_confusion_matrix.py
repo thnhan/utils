@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
-from my_tools import get_scores
 
 
 def plot_confusion_matrix(cm, classes,
@@ -50,12 +49,12 @@ def plot_average_confusion_matrix(arr_cm, classes=[-1, 1],
                       title='Normalized confusion matrix')
 
 
-def plot_average_confusion_matrix_(arr_y_test, arr_y_pred, classes=[0, 1], normalize=True, title='Normalized confusion matrix'):
-    arr_cm = get_scores.calc_confusion_matrix_KFOLD(arr_y_test, arr_y_pred)
-    plot_average_confusion_matrix(arr_cm,
-                                        classes=classes,
-                                        normalize=normalize,            
-                                        title=title)
+# def plot_average_confusion_matrix_(arr_y_test, arr_y_pred, classes=[0, 1], normalize=True, title='Normalized confusion matrix'):
+#     arr_cm = get_scores.calc_confusion_matrix_KFOLD(arr_y_test, arr_y_pred)
+#     plot_average_confusion_matrix(arr_cm,
+#                                         classes=classes,
+#                                         normalize=normalize,
+#                                         title=title)
 
 
 # import matplotlib.pyplot as plt
